@@ -56,6 +56,7 @@ PROGS       := \
   mkdir \
   nl \
   paste \
+  pathchk \
   printenv \
   pwd \
   realpath \
