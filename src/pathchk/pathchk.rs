@@ -35,5 +35,35 @@ pub fn uumain(args: Vec<String>) -> int  {
         print(getopts::usage("Diagnose invalid or unportable file names.", opts).as_slice());
         return 0
     }
+
+    if matches.opt_present("version") {
+        println!("pathchk 1.0.0");
+        return 0;
+    }
+
+    let mut check_basic_portability = false;
+    if matches.opt_present("p") {
+        check_basic_portability = true;
+    }
+
+    let mut check_extra_portability = false;
+    if matches.opt_present("p") {
+        check_extra_portability = true;
+    }
+
+    if matches.opt_present("portability") {
+        check_basic_portability = true;
+        check_extra_portability = true;
+    }
+
+    let names = matches.free;
+    if names.is_empty() {
+        fail!("missing operand");
+    }
+
+    for name in names.iter() {
+        println!("checking file {}...", name);
+    }
+
     0
 }
