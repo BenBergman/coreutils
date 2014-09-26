@@ -1,3 +1,4 @@
+#![feature(macro_rules)]
 #![crate_name = "pathchk"]
 
 /*
@@ -12,6 +13,12 @@
 extern crate getopts;
 
 use std::io::{print};
+
+#[path = "../common/util.rs"]
+mod util;
+
+static NAME: &'static str = "pathchk";
+static VERSION: &'static str = "1.0.0";
 
 pub fn uumain(args: Vec<String>) -> int  {
     let program = args[0].as_slice();
@@ -37,7 +44,7 @@ pub fn uumain(args: Vec<String>) -> int  {
     }
 
     if matches.opt_present("version") {
-        println!("pathchk 1.0.0");
+        println!("{} {}", program, VERSION);
         return 0;
     }
 
@@ -58,12 +65,34 @@ pub fn uumain(args: Vec<String>) -> int  {
 
     let names = matches.free;
     if names.is_empty() {
-        fail!("missing operand");
+        crash!(1, "missing operand");
     }
 
+    let mut okay = 0;
     for name in names.iter() {
         println!("checking file {}...", name);
+        if ! validate_file_name(name, check_basic_portability, check_extra_portability) {
+            okay = 1;
+        }
     }
 
-    0
+    okay
+}
+
+
+fn validate_file_name(name: &String, check_basic_portability: bool, check_extra_portability: bool) -> bool {
+    if check_extra_portability && leading_hyphen(name) {
+        return false;
+    }
+
+    if (check_extra_portability || check_basic_portability) && name.len() == 0 {
+        crash!(1, "empty file name");
+    }
+
+    true
+}
+
+
+fn leading_hyphen(name: &String) -> bool {
+    false
 }
