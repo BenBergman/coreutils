@@ -132,6 +132,7 @@ TEST_PROGS  := \
   cat \
   mkdir \
   nl \
+  pathchk \
   seq \
   tr \
   truncate \

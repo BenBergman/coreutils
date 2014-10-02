@@ -70,7 +70,6 @@ pub fn uumain(args: Vec<String>) -> int  {
 
     let mut okay = 0;
     for name in names.iter() {
-        println!("checking file {}...", name);
         if ! validate_file_name(name, check_basic_portability, check_extra_portability) {
             okay = 1;
         }
