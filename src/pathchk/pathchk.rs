@@ -80,7 +80,7 @@ pub fn uumain(args: Vec<String>) -> int  {
 
 
 fn validate_file_name(name: &String, check_basic_portability: bool, check_extra_portability: bool) -> bool {
-    if check_extra_portability && leading_hyphen(name) {
+    if check_extra_portability && leading_hyphen(name.as_slice()) {
         return false;
     }
 
@@ -92,6 +92,18 @@ fn validate_file_name(name: &String, check_basic_portability: bool, check_extra_
 }
 
 
-fn leading_hyphen(name: &String) -> bool {
+fn leading_hyphen(name: &str) -> bool {
+    for (i, c) in name.char_indices() {
+        if c == '/' && name.char_at(i + 1) == '-' {
+            //crash!(0, "leading '-' in a component of file name '{}'", name);
+            return true;
+        }
+    }
     false
+}
+
+#[test]
+fn test_leading_hyphen() {
+    assert!(leading_hyphen("aoue/-snth"));
+    assert!(!leading_hyphen("aoue/snth"));
 }
