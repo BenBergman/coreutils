@@ -85,7 +85,14 @@ fn validate_file_name(name: &String, check_basic_portability: bool, check_extra_
     }
 
     if (check_extra_portability || check_basic_portability) && name.len() == 0 {
-        crash!(1, "empty file name");
+        println!("{}: empty file name", NAME);
+        return false;
+    }
+
+    if check_basic_portability {
+        if ! portable_chars_only(name.as_slice()) {
+            return false;
+        }
     }
 
     true
@@ -103,9 +110,29 @@ fn leading_hyphen(name: &str) -> bool {
 }
 
 
+fn portable_chars_only(name: &str) -> bool {
+    let approved_chars =  "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/._-";
+    for c in name.chars() {
+        if ! approved_chars.contains_char(c) {
+            println!("{}: nonportable character '{}' in file name '{}'", NAME, c, name);
+            return false;
+        }
+    }
+    true
+}
+
+
 #[test]
 fn test_leading_hyphen() {
     assert!(leading_hyphen("aoue/-snth"));
     assert!(leading_hyphen("-aoue/snth"));
     assert!(!leading_hyphen("aoue/snth"));
+}
+
+
+#[test]
+fn test_portable_chars_only() {
+    assert!(portable_chars_only("aoesunth"));
+    assert!(portable_chars_only("nt/923874/._-"));
+    assert!(!portable_chars_only(")(*^%$*&^$)"));
 }
