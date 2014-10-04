@@ -94,16 +94,18 @@ fn validate_file_name(name: &String, check_basic_portability: bool, check_extra_
 
 fn leading_hyphen(name: &str) -> bool {
     for (i, c) in name.char_indices() {
-        if c == '/' && name.char_at(i + 1) == '-' {
-            //crash!(0, "leading '-' in a component of file name '{}'", name);
+        if c == '-' && (i == 0 || name.char_at(i - 1) == '/') {
+            println!("{}: leading '-' in a component of file name '{}'", NAME, name);
             return true;
         }
     }
     false
 }
 
+
 #[test]
 fn test_leading_hyphen() {
     assert!(leading_hyphen("aoue/-snth"));
+    assert!(leading_hyphen("-aoue/snth"));
     assert!(!leading_hyphen("aoue/snth"));
 }
