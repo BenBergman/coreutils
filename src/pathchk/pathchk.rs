@@ -13,12 +13,14 @@
 extern crate getopts;
 
 use std::io::{print};
+use std::io::fs::PathExtensions;
 
 #[path = "../common/util.rs"]
 mod util;
 
 static NAME: &'static str = "pathchk";
 static VERSION: &'static str = "1.0.0";
+static PATH_MAX_MINIMUM: uint = 256;
 
 pub fn uumain(args: Vec<String>) -> int  {
     let program = args[0].as_slice();
@@ -89,8 +91,20 @@ fn validate_file_name(name: &String, check_basic_portability: bool, check_extra_
         return false;
     }
 
-    if check_basic_portability {
-        if ! portable_chars_only(name.as_slice()) {
+    if check_basic_portability && ! portable_chars_only(name.as_slice()) {
+        return false;
+    }
+
+    let file_exists = ! check_basic_portability && Path::new(name.as_slice()).exists();
+
+    if check_basic_portability || (! file_exists && PATH_MAX_MINIMUM <= name.len()) {
+        let dir = match name.as_slice().char_at(0) {
+            '/' => "/",
+            _   => ".",
+        };
+        let maxsize = get_max_size(dir);
+        if maxsize <= name.len() {
+            println!("{}: limit {} exceeded by length {} of file name '{}'", NAME, maxsize - 1, name.len(), name);
             return false;
         }
     }
@@ -119,6 +133,12 @@ fn portable_chars_only(name: &str) -> bool {
         }
     }
     true
+}
+
+
+fn get_max_size(dir: &str) -> uint {
+    // FIXME: GNU pathchk uses pathconf and various constants from limits.h
+    256
 }
 
 

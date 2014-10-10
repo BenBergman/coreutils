@@ -20,3 +20,18 @@ fn test_argument_required() {
     assert_eq!(err, "pathchk: error: missing operand\n");
     assert_eq!(status, ExitStatus(1));
 }
+
+
+#[test]
+fn test_max_path_size() {
+    let po = match Command::new(PROGNAME)
+        .arg("-p")
+        .arg("a".repeat(260))
+        .output() {
+        Ok(p) => p,
+        Err(err) => fail!("{}", err),
+    };
+
+    let status = po.status;
+    assert_eq!(status, ExitStatus(1));
+}
